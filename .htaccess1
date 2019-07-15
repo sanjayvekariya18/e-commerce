@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+
+  Options +FollowSymLinks
+  RewriteEngine On
+  RewriteBase /flipkart/
+
+  # If your default controller is something other than 'welcome' you should probably change this.
+  RewriteRule ^(welcome(/index)?|index(\.php)?)/?$ / [L,R=301]
+  RewriteRule ^(.*)/index/?$ $1 [L,R=301]
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ /index.php/$1 [L]
+
+  SetEnvIfNoCase X-Forwarded-For .+ proxy=yes
+  SetEnvIfNoCase X-moz prefetch no_access=yes
+   
+  # Block pre-fetch requests with X-moz headers.
+  RewriteCond %{ENV:no_access} yes
+  RewriteRule .* - [F,L]
+
+  # Fix for infinite redirect loops.
+  RewriteCond %{ENV:REDIRECT_STATUS} 200
+  RewriteRule .* - [L]
+
+</IfModule>
